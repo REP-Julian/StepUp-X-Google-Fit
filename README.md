@@ -21,6 +21,7 @@ Injects authentic human walking cadences directly through the official Google Fi
 * **Automated Workout Sessions:** Pairs every step batch with corresponding `com.google.activity.segment` (`activityType: 7` - Walking) and creates official `Outdoor Walk` sessions in `users/me/sessions`.
 * **Zero-Lag Cloud Step Purge (`reset_steps.py`):** Made a mistake or added too many steps? Wipes today's injected sessions and raw step datasets back to zero in seconds.
 * **Dynamic Device Stream Discovery:** Automatically discovers your phone's hardware model (e.g. Samsung Galaxy, Google Pixel) or creates matching phone pedometer streams so Google Fit mobile UI refreshes immediately.
+* **Native Android App (Jetpack Compose):** Dedicated mobile client with Fused Location GPS Ride-to-Steps, multi-device spoofing (Galaxy S23 FE, itel ISW-011, Pixel Watch 3, Galaxy Watch 6), and offline queue resilience for spotty rural networks.
 * **Security & Privacy First:** Zero hardcoded credentials or client secrets. Authenticates via local OAuth 2.0 PKCE / Desktop flow and stores tokens locally under `.gitignore`.
 
 ---
@@ -175,6 +176,63 @@ Purges all injected walking sessions and step data points recorded today back to
 python reset_steps.py
 ```
 *(Or double-click `start_reset.bat`)*
+
+---
+
+## 📱 Native Android App: Setup & Gradle Build
+
+The repository includes a modern, native Android application built with **Jetpack Compose**, **Material 3**, and **Google Play Services Location & Auth**.
+
+### Features:
+- **Ride-to-Steps**: Automatically converts motorcycle, car, or bicycle rides into authentic walking steps using Fused Location GPS speed filtering (10–70 km/h) and Doppler EMA smoothing.
+- **Hardware Profile Spoofing**: Switch your dataStream device identity between:
+  - `Samsung Galaxy S23 FE` (Default phone sensor)
+  - `itel ISW-011 Smartwatch` (FitCloudPro ecosystem)
+  - `Google Pixel Watch 3`
+  - `Samsung Galaxy Watch 6`
+- **Rural Offline Resilience**: Queues up to 3,000 batches locally in encrypted SharedPreferences if network drops, flushing to Google Fit automatically when internet returns.
+- **Granular Step Removal**: Reset steps by custom count or presets (`-100`, `-250`, `-500`, `-1k`, `-2.5k`, `-5k`).
+
+### Prerequisites for Building:
+- **JDK 17 or higher** (Tested compatible up to JDK 25 with Gradle 9.6.1).
+- **Android SDK** with `compileSdk = 35` and `platform-tools`. Set environment variable `ANDROID_HOME` (e.g. `C:\Users\<User>\AppData\Local\Android\Sdk`).
+
+### 1. Configure Android OAuth Client ID
+1. In [Google Cloud Console](https://console.cloud.google.com/) $\rightarrow$ **Credentials** $\rightarrow$ **Create Credentials** $\rightarrow$ **OAuth client ID**.
+2. Select **Android**.
+3. Package name: `com.julian.stepup`
+4. SHA-1 fingerprint: Obtain your debug keystore SHA-1:
+   ```bash
+   keytool -list -v -keystore "%USERPROFILE%\.android\debug.keystore" -alias androiddebugkey -storepass android -keypass android
+   ```
+5. Set the generated Web Client ID in the app's OAuth configuration if using backend token exchange.
+
+### 2. Build APK via Gradle Command Line
+Navigate to `android-app/` and run the included Gradle Wrapper:
+
+**On Windows:**
+```cmd
+cd android-app
+gradlew.bat assembleDebug
+```
+
+**On Linux / macOS:**
+```bash
+cd android-app
+chmod +x gradlew
+./gradlew assembleDebug
+```
+
+The output APK will be generated at:
+```
+android-app/app/build/outputs/apk/debug/app-debug.apk
+```
+
+### 3. Install via ADB
+Connect your phone via USB with USB Debugging enabled:
+```bash
+adb install -r android-app/app/build/outputs/apk/debug/app-debug.apk
+```
 
 ---
 

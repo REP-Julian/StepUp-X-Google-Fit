@@ -35,6 +35,7 @@ android-app/local.properties
 android_project/bin/
 android_project/gen/
 android_project/out/
+!android-app/gradle/wrapper/gradle-wrapper.jar
 
 # Python Cache & Virtual Environments
 __pycache__/
