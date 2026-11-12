@@ -1,0 +1,55 @@
+# ==============================================================================
+# Google OAuth Secrets, Credentials & Tokens (CRITICAL: NEVER COMMIT)
+# ==============================================================================
+client_secret.json
+client_secret*.json
+google_health_client.json
+google_health_token.json
+token.json
+*.token.json
+credentials.json
+*.credentials.json
+.env
+.env.local
+.env.*.local
+
+# Keystores & Signing Keys
+*.keystore
+*.jks
+*.p12
+*.pem
+*.key
+
+# Android Build Outputs & Packages
+*.apk
+*.aab
+build/
+build_out/
+.gradle/
+android_project/bin/
+android_project/gen/
+android_project/out/
+
+# Python Cache & Virtual Environments
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+build/
+dist/
+*.egg-info/
+
+# Operating System & IDE Files
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.log
